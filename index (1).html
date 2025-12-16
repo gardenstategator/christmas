@@ -1,0 +1,858 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🎸 Secret Mission 🎸</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Metal+Mania&family=Special+Elite&display=swap');
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            background-color: #0a0a0a;
+            background-image: 
+                radial-gradient(ellipse at top, #1a0a0a 0%, #0a0a0a 50%),
+                repeating-linear-gradient(
+                    0deg,
+                    transparent,
+                    transparent 2px,
+                    rgba(255,255,255,0.03) 2px,
+                    rgba(255,255,255,0.03) 4px
+                );
+            color: #e0e0e0;
+            font-family: 'Special Elite', monospace;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+        
+        .container {
+            max-width: 700px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        h1 {
+            font-family: 'Metal Mania', cursive;
+            font-size: 2.5rem;
+            text-align: center;
+            color: #ff3333;
+            text-shadow: 
+                3px 3px 0 #000,
+                -1px -1px 0 #ff6600,
+                4px 4px 10px rgba(255,51,51,0.5);
+            margin-bottom: 10px;
+            transform: rotate(-2deg);
+            letter-spacing: 2px;
+        }
+        
+        .subtitle {
+            text-align: center;
+            font-size: 1rem;
+            color: #888;
+            margin-bottom: 30px;
+            border-bottom: 2px dashed #333;
+            border-top: 2px dashed #333;
+            padding: 10px;
+            transform: rotate(1deg);
+        }
+        
+        .band-list {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 8px;
+            margin-bottom: 25px;
+            padding: 15px;
+            background: repeating-linear-gradient(
+                45deg,
+                #111,
+                #111 10px,
+                #0d0d0d 10px,
+                #0d0d0d 20px
+            );
+            border: 3px solid #333;
+        }
+        
+        .band-tag {
+            padding: 5px 12px;
+            font-size: 0.85rem;
+            background: #1a1a1a;
+            border: 2px solid #444;
+            color: #ff6600;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        
+        .band-tag.found {
+            background: #2a0a0a;
+            border-color: #ff3333;
+            color: #ff3333;
+            text-decoration: line-through;
+            transform: rotate(-3deg) scale(0.95);
+            box-shadow: 0 0 10px rgba(255,51,51,0.3);
+        }
+        
+        .grid-container {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 20px;
+        }
+        
+        .word-grid {
+            display: grid;
+            grid-template-columns: repeat(15, 1fr);
+            gap: 2px;
+            background: #000;
+            padding: 10px;
+            border: 4px solid #ff3333;
+            box-shadow: 
+                inset 0 0 30px rgba(255,51,51,0.1),
+                0 0 20px rgba(255,51,51,0.2);
+        }
+        
+        .cell {
+            width: 22px;
+            height: 22px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: 'Special Elite', monospace;
+            font-size: 14px;
+            font-weight: bold;
+            background: #1a1a1a;
+            color: #ccc;
+            cursor: pointer;
+            user-select: none;
+            transition: all 0.15s ease;
+            border: 1px solid #222;
+        }
+        
+        .cell:hover {
+            background: #2a2a2a;
+            color: #fff;
+        }
+        
+        .cell.selected {
+            background: #ff6600;
+            color: #000;
+            border-color: #ff6600;
+        }
+        
+        .cell.found {
+            background: #ff3333;
+            color: #fff;
+            border-color: #ff3333;
+            animation: pulse 0.5s ease;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+        }
+        
+        .instructions {
+            text-align: center;
+            padding: 15px;
+            background: #111;
+            border-left: 4px solid #ff6600;
+            margin-bottom: 20px;
+            font-size: 0.9rem;
+        }
+        
+        .instructions span {
+            color: #ff6600;
+        }
+        
+        .progress-container {
+            margin-bottom: 20px;
+        }
+        
+        .progress-bar {
+            height: 20px;
+            background: #1a1a1a;
+            border: 2px solid #333;
+            overflow: hidden;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #ff3333, #ff6600);
+            width: 0%;
+            transition: width 0.5s ease;
+        }
+        
+        .progress-text {
+            text-align: center;
+            margin-top: 5px;
+            font-size: 0.9rem;
+            color: #888;
+        }
+        
+        /* Clues revealed during word hunt */
+        .clues-container {
+            margin-top: 20px;
+            padding: 15px;
+            background: #111;
+            border: 2px solid #333;
+            display: none;
+        }
+        
+        .clues-container.visible {
+            display: block;
+        }
+        
+        .clues-title {
+            font-family: 'Metal Mania', cursive;
+            color: #ff6600;
+            margin-bottom: 10px;
+            font-size: 1.2rem;
+        }
+        
+        .clue-item {
+            display: inline-block;
+            margin: 5px;
+            padding: 5px 10px;
+            background: #1a1a1a;
+            border: 1px solid #ff3333;
+            color: #ff3333;
+            font-family: 'Special Elite', monospace;
+            animation: clueReveal 0.5s ease;
+        }
+        
+        @keyframes clueReveal {
+            from { opacity: 0; transform: scale(0.5); }
+            to { opacity: 1; transform: scale(1); }
+        }
+        
+        /* Decode section */
+        .decode-section {
+            display: none;
+            text-align: center;
+            padding: 30px 10px;
+            animation: fadeIn 1s ease;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .decode-section h2 {
+            font-family: 'Metal Mania', cursive;
+            font-size: 1.8rem;
+            color: #ff6600;
+            margin-bottom: 15px;
+            text-shadow: 2px 2px 0 #000;
+        }
+        
+        .decode-instructions {
+            color: #888;
+            margin-bottom: 20px;
+            font-size: 0.95rem;
+            line-height: 1.5;
+        }
+        
+        .cipher-key-display {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 8px;
+            margin-bottom: 25px;
+            padding: 15px;
+            background: #0d0d0d;
+            border: 2px solid #333;
+        }
+        
+        .key-item {
+            padding: 5px 10px;
+            background: #1a1a1a;
+            border: 1px solid #ff3333;
+            color: #ff3333;
+            font-family: 'Special Elite', monospace;
+            font-size: 0.9rem;
+        }
+        
+        .cipher-puzzle {
+            margin-bottom: 25px;
+        }
+        
+        .cipher-word {
+            display: inline-block;
+            margin: 10px 5px;
+        }
+        
+        .cipher-letter-group {
+            display: inline-flex;
+            flex-direction: column;
+            align-items: center;
+            margin: 0 2px;
+        }
+        
+        .cipher-encoded {
+            font-size: 1.2rem;
+            color: #666;
+            font-family: 'Special Elite', monospace;
+            margin-bottom: 5px;
+        }
+        
+        .cipher-input {
+            width: 30px;
+            height: 35px;
+            text-align: center;
+            font-size: 1.2rem;
+            font-family: 'Metal Mania', cursive;
+            background: #1a1a1a;
+            border: 2px solid #444;
+            color: #fff;
+            text-transform: uppercase;
+        }
+        
+        .cipher-input:focus {
+            outline: none;
+            border-color: #ff6600;
+            box-shadow: 0 0 10px rgba(255,102,0,0.3);
+        }
+        
+        .cipher-input.correct {
+            border-color: #33ff33;
+            background: #0a2a0a;
+            color: #33ff33;
+        }
+        
+        .cipher-input.incorrect {
+            border-color: #ff3333;
+            background: #2a0a0a;
+        }
+        
+        .cipher-space {
+            display: inline-block;
+            width: 20px;
+        }
+        
+        .check-btn {
+            font-family: 'Metal Mania', cursive;
+            font-size: 1.3rem;
+            padding: 12px 30px;
+            background: linear-gradient(180deg, #ff6600, #cc5200);
+            color: #fff;
+            border: none;
+            cursor: pointer;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 15px rgba(255,102,0,0.3);
+            margin-top: 10px;
+        }
+        
+        .check-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 5px 25px rgba(255,102,0,0.5);
+        }
+        
+        .hint-text {
+            color: #666;
+            font-size: 0.85rem;
+            margin-top: 15px;
+        }
+        
+        /* Final reveal */
+        .reveal-section {
+            display: none;
+            text-align: center;
+            padding: 40px 20px;
+            animation: revealAnim 1.5s ease;
+        }
+        
+        @keyframes revealAnim {
+            0% { opacity: 0; transform: scale(0.5) rotate(-10deg); }
+            50% { transform: scale(1.1) rotate(2deg); }
+            100% { opacity: 1; transform: scale(1) rotate(0deg); }
+        }
+        
+        .reveal-section h2 {
+            font-family: 'Metal Mania', cursive;
+            font-size: 2.5rem;
+            color: #ff3333;
+            text-shadow: 
+                4px 4px 0 #000,
+                0 0 30px rgba(255,51,51,0.5),
+                0 0 60px rgba(255,102,0,0.3);
+            margin-bottom: 20px;
+            animation: glow 2s ease-in-out infinite alternate;
+        }
+        
+        @keyframes glow {
+            from { text-shadow: 4px 4px 0 #000, 0 0 30px rgba(255,51,51,0.5); }
+            to { text-shadow: 4px 4px 0 #000, 0 0 50px rgba(255,51,51,0.8), 0 0 80px rgba(255,102,0,0.5); }
+        }
+        
+        .gift-icon {
+            font-size: 5rem;
+            margin-bottom: 20px;
+            animation: bounce 1s ease infinite;
+        }
+        
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+        
+        .message {
+            font-size: 1.5rem;
+            color: #ff6600;
+            margin-top: 30px;
+            padding: 20px;
+            border-top: 2px dashed #333;
+            border-bottom: 2px dashed #333;
+            transform: rotate(-1deg);
+        }
+        
+        .location {
+            font-size: 1.2rem;
+            color: #888;
+            margin-top: 15px;
+        }
+        
+        @media (max-width: 500px) {
+            .cell {
+                width: 18px;
+                height: 18px;
+                font-size: 11px;
+            }
+            
+            h1 {
+                font-size: 1.8rem;
+            }
+            
+            .reveal-section h2 {
+                font-size: 1.8rem;
+            }
+            
+            .band-tag {
+                font-size: 0.7rem;
+                padding: 4px 8px;
+            }
+            
+            .cipher-input {
+                width: 25px;
+                height: 30px;
+                font-size: 1rem;
+            }
+            
+            .cipher-encoded {
+                font-size: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Stage 1: Word Hunt -->
+        <div id="hunt-section">
+            <h1>⚡ CLASSIFIED INTEL ⚡</h1>
+            <p class="subtitle">// SECURITY CLEARANCE REQUIRED //</p>
+            
+            <div class="instructions">
+                <span>MISSION:</span> Find all 10 bands hidden in the grid below.<br>
+                Click and drag to select letters. Each band you find reveals a cipher clue.
+            </div>
+            
+            <div class="band-list" id="band-list"></div>
+            
+            <div class="progress-container">
+                <div class="progress-bar">
+                    <div class="progress-fill" id="progress-fill"></div>
+                </div>
+                <p class="progress-text"><span id="found-count">0</span> / 10 TARGETS ACQUIRED</p>
+            </div>
+            
+            <div class="grid-container">
+                <div class="word-grid" id="word-grid"></div>
+            </div>
+            
+            <div class="clues-container" id="clues-container">
+                <div class="clues-title">🔑 CIPHER CLUES UNLOCKED:</div>
+                <div id="clues-list"></div>
+            </div>
+        </div>
+        
+        <!-- Stage 2: Decode -->
+        <div class="decode-section" id="decode-section">
+            <h2>⚡ DECODE THE MESSAGE ⚡</h2>
+            <p class="decode-instructions">
+                Use the cipher clues you collected to decode the secret message.<br>
+                Each clue shows: ENCODED → DECODED
+            </p>
+            
+            <div class="cipher-key-display" id="cipher-key-display"></div>
+            
+            <div class="cipher-puzzle" id="cipher-puzzle"></div>
+            
+            <button class="check-btn" id="check-btn">⚡ CHECK ANSWER ⚡</button>
+            
+            <p class="hint-text">Hint: Use the clues above. Each symbol decodes to one letter.</p>
+        </div>
+        
+        <!-- Final Reveal -->
+        <div class="reveal-section" id="reveal-section">
+            <div class="gift-icon">🎸</div>
+            <h2>GUITAR CENTER<br>GIFT CARD</h2>
+            <p class="location">📍 Tampa</p>
+            <p class="message">Merry Christmas, you slobs! 🤘</p>
+        </div>
+    </div>
+    
+    <script>
+        // Band names to find
+        const bands = [
+            'METALLICA',
+            'IRONMAIDEN',
+            'JUDASPRIEST',
+            'BLACKSABBATH',
+            'BLACKFLAG',
+            'DEADKENNEDYS',
+            'THEMELVINS',
+            'ACDC',
+            'LEDZEPPELIN',
+            'CIRCLEJERKS'
+        ];
+        
+        const displayNames = [
+            'Metallica',
+            'Iron Maiden',
+            'Judas Priest',
+            'Black Sabbath',
+            'Black Flag',
+            'Dead Kennedys',
+            'The Melvins',
+            'AC/DC',
+            'Led Zeppelin',
+            'Circle Jerks'
+        ];
+        
+        // The answer: GUITAR CENTER GIFT CARD
+        // Letters needed: G U I T A R C E N F D
+        // Cipher: each band reveals one letter substitution
+        // We'll use symbols as the encoded version
+        
+        const cipherKey = {
+            'G': '⚡',
+            'U': '🔥',
+            'I': '💀',
+            'T': '⛧',
+            'A': '☠',
+            'R': '🎸',
+            'C': '✖',
+            'E': '◆',
+            'N': '▼',
+            'F': '★',
+            'D': '●'
+        };
+        
+        // Which band reveals which letter
+        const bandReveals = {
+            'METALLICA': ['G', '⚡'],
+            'IRONMAIDEN': ['U', '🔥'],
+            'JUDASPRIEST': ['I', '💀'],
+            'BLACKSABBATH': ['T', '⛧'],
+            'BLACKFLAG': ['A', '☠'],
+            'DEADKENNEDYS': ['R', '🎸'],
+            'THEMELVINS': ['C', '✖'],
+            'ACDC': ['E', '◆'],
+            'LEDZEPPELIN': ['N', '▼'],
+            'CIRCLEJERKS': ['F', '★']
+        };
+        
+        // Grid with mixed horizontal, vertical orientations - More challenging!
+        const gridData = [
+            ['M','E','T','A','L','L','I','C','A','Y','E','N','C','Y','B'],
+            ['J','E','J','W','R','M','Z','E','I','E','P','I','C','T','L'],
+            ['Y','T','I','R','O','N','M','A','I','D','E','N','Y','H','A'],
+            ['F','C','B','Z','K','M','F','K','X','M','Q','Q','Y','E','C'],
+            ['D','J','U','D','A','S','P','R','I','E','S','T','Q','M','K'],
+            ['Y','B','H','R','D','K','V','W','G','C','K','Q','W','E','S'],
+            ['D','E','A','D','K','E','N','N','E','D','Y','S','Y','L','A'],
+            ['J','U','O','L','T','E','O','B','V','P','R','K','L','V','B'],
+            ['R','L','B','B','L','A','C','K','F','L','A','G','P','I','B'],
+            ['Q','Z','G','Z','F','Q','I','T','O','E','C','L','E','N','A'],
+            ['M','L','E','D','Z','E','P','P','E','L','I','N','M','S','T'],
+            ['E','M','S','D','Z','S','P','N','M','H','W','M','Y','S','H'],
+            ['K','U','C','I','R','C','L','E','J','E','R','K','S','Y','K'],
+            ['L','S','I','X','U','Q','L','F','Z','O','F','Q','B','O','H'],
+            ['A','C','D','C','G','G','G','H','F','T','E','B','E','S','V']
+        ];
+        
+        const wordPositions = {
+            'METALLICA': [0, 0, 'H'],       // Horizontal
+            'IRONMAIDEN': [2, 2, 'H'],      // Horizontal
+            'JUDASPRIEST': [4, 1, 'H'],     // Horizontal
+            'DEADKENNEDYS': [6, 0, 'H'],    // Horizontal
+            'BLACKFLAG': [8, 3, 'H'],       // Horizontal
+            'LEDZEPPELIN': [10, 1, 'H'],    // Horizontal
+            'CIRCLEJERKS': [12, 2, 'H'],    // Horizontal
+            'THEMELVINS': [1, 13, 'V'],     // Vertical
+            'BLACKSABBATH': [0, 14, 'V'],   // Vertical
+            'ACDC': [14, 0, 'H']            // Horizontal
+        };
+        
+        let foundBands = new Set();
+        let revealedClues = {};
+        let selectedCells = [];
+        let isSelecting = false;
+        
+        function init() {
+            createBandTags();
+            createGrid();
+            setupEventListeners();
+        }
+        
+        function createBandTags() {
+            const container = document.getElementById('band-list');
+            displayNames.forEach((name, i) => {
+                const tag = document.createElement('span');
+                tag.className = 'band-tag';
+                tag.id = `tag-${bands[i]}`;
+                tag.textContent = name;
+                container.appendChild(tag);
+            });
+        }
+        
+        function createGrid() {
+            const grid = document.getElementById('word-grid');
+            gridData.forEach((row, rowIndex) => {
+                row.forEach((letter, colIndex) => {
+                    const cell = document.createElement('div');
+                    cell.className = 'cell';
+                    cell.textContent = letter;
+                    cell.dataset.row = rowIndex;
+                    cell.dataset.col = colIndex;
+                    grid.appendChild(cell);
+                });
+            });
+        }
+        
+        function setupEventListeners() {
+            const grid = document.getElementById('word-grid');
+            
+            grid.addEventListener('mousedown', startSelection);
+            grid.addEventListener('mouseover', continueSelection);
+            document.addEventListener('mouseup', endSelection);
+            
+            grid.addEventListener('touchstart', handleTouchStart, { passive: false });
+            grid.addEventListener('touchmove', handleTouchMove, { passive: false });
+            grid.addEventListener('touchend', endSelection);
+            
+            document.getElementById('check-btn').addEventListener('click', checkAnswer);
+        }
+        
+        function startSelection(e) {
+            if (e.target.classList.contains('cell') && !e.target.classList.contains('found')) {
+                isSelecting = true;
+                selectedCells = [];
+                toggleCell(e.target);
+            }
+        }
+        
+        function continueSelection(e) {
+            if (isSelecting && e.target.classList.contains('cell') && !e.target.classList.contains('found')) {
+                toggleCell(e.target);
+            }
+        }
+        
+        function handleTouchStart(e) {
+            e.preventDefault();
+            const touch = e.touches[0];
+            const cell = document.elementFromPoint(touch.clientX, touch.clientY);
+            if (cell && cell.classList.contains('cell') && !cell.classList.contains('found')) {
+                isSelecting = true;
+                selectedCells = [];
+                toggleCell(cell);
+            }
+        }
+        
+        function handleTouchMove(e) {
+            e.preventDefault();
+            if (isSelecting) {
+                const touch = e.touches[0];
+                const cell = document.elementFromPoint(touch.clientX, touch.clientY);
+                if (cell && cell.classList.contains('cell') && !cell.classList.contains('found')) {
+                    toggleCell(cell);
+                }
+            }
+        }
+        
+        function toggleCell(cell) {
+            const cellKey = `${cell.dataset.row}-${cell.dataset.col}`;
+            if (!selectedCells.find(c => c.key === cellKey)) {
+                selectedCells.push({
+                    element: cell,
+                    key: cellKey,
+                    row: parseInt(cell.dataset.row),
+                    col: parseInt(cell.dataset.col),
+                    letter: cell.textContent
+                });
+                cell.classList.add('selected');
+            }
+        }
+        
+        function endSelection() {
+            if (!isSelecting) return;
+            isSelecting = false;
+            
+            const selectedWord = selectedCells.map(c => c.letter).join('');
+            const reversedWord = selectedWord.split('').reverse().join('');
+            
+            let foundWord = null;
+            if (bands.includes(selectedWord) && !foundBands.has(selectedWord)) {
+                foundWord = selectedWord;
+            } else if (bands.includes(reversedWord) && !foundBands.has(reversedWord)) {
+                foundWord = reversedWord;
+            }
+            
+            if (foundWord) {
+                foundBands.add(foundWord);
+                selectedCells.forEach(c => {
+                    c.element.classList.remove('selected');
+                    c.element.classList.add('found');
+                });
+                
+                document.getElementById(`tag-${foundWord}`).classList.add('found');
+                
+                // Reveal the clue for this band
+                revealClue(foundWord);
+                
+                updateProgress();
+                
+                if (foundBands.size === bands.length) {
+                    setTimeout(showDecodeSection, 1000);
+                }
+            } else {
+                selectedCells.forEach(c => c.element.classList.remove('selected'));
+            }
+            
+            selectedCells = [];
+        }
+        
+        function revealClue(bandName) {
+            const clue = bandReveals[bandName];
+            revealedClues[clue[1]] = clue[0];
+            
+            const container = document.getElementById('clues-container');
+            container.classList.add('visible');
+            
+            const cluesList = document.getElementById('clues-list');
+            const clueItem = document.createElement('span');
+            clueItem.className = 'clue-item';
+            clueItem.textContent = `${clue[1]} → ${clue[0]}`;
+            cluesList.appendChild(clueItem);
+        }
+        
+        function updateProgress() {
+            const percent = (foundBands.size / bands.length) * 100;
+            document.getElementById('progress-fill').style.width = `${percent}%`;
+            document.getElementById('found-count').textContent = foundBands.size;
+        }
+        
+        function showDecodeSection() {
+            document.getElementById('hunt-section').style.display = 'none';
+            document.getElementById('decode-section').style.display = 'block';
+            
+            // Show the cipher key they collected
+            const keyDisplay = document.getElementById('cipher-key-display');
+            Object.entries(revealedClues).forEach(([symbol, letter]) => {
+                const keyItem = document.createElement('span');
+                keyItem.className = 'key-item';
+                keyItem.textContent = `${symbol} → ${letter}`;
+                keyDisplay.appendChild(keyItem);
+            });
+            
+            // Add the free D clue (only letter not covered by bands)
+            const freeClue = document.createElement('span');
+            freeClue.className = 'key-item';
+            freeClue.textContent = `● → D`;
+            keyDisplay.appendChild(freeClue);
+            
+            // Create the cipher puzzle
+            createCipherPuzzle();
+        }
+        
+        function createCipherPuzzle() {
+            const answer = "GUITAR CENTER GIFT CARD";
+            const puzzleContainer = document.getElementById('cipher-puzzle');
+            
+            const words = answer.split(' ');
+            words.forEach((word, wordIndex) => {
+                const wordSpan = document.createElement('span');
+                wordSpan.className = 'cipher-word';
+                
+                word.split('').forEach((letter, letterIndex) => {
+                    const group = document.createElement('span');
+                    group.className = 'cipher-letter-group';
+                    
+                    const encoded = document.createElement('span');
+                    encoded.className = 'cipher-encoded';
+                    encoded.textContent = cipherKey[letter];
+                    
+                    const input = document.createElement('input');
+                    input.type = 'text';
+                    input.maxLength = 1;
+                    input.className = 'cipher-input';
+                    input.dataset.answer = letter;
+                    
+                    // Auto-advance to next input
+                    input.addEventListener('input', (e) => {
+                        e.target.value = e.target.value.toUpperCase();
+                        if (e.target.value.length === 1) {
+                            const inputs = document.querySelectorAll('.cipher-input');
+                            const currentIndex = Array.from(inputs).indexOf(e.target);
+                            if (currentIndex < inputs.length - 1) {
+                                inputs[currentIndex + 1].focus();
+                            }
+                        }
+                    });
+                    
+                    group.appendChild(encoded);
+                    group.appendChild(input);
+                    wordSpan.appendChild(group);
+                });
+                
+                puzzleContainer.appendChild(wordSpan);
+                
+                // Add space between words
+                if (wordIndex < words.length - 1) {
+                    const space = document.createElement('span');
+                    space.className = 'cipher-space';
+                    puzzleContainer.appendChild(space);
+                }
+            });
+        }
+        
+        function checkAnswer() {
+            const inputs = document.querySelectorAll('.cipher-input');
+            let allCorrect = true;
+            
+            inputs.forEach(input => {
+                const isCorrect = input.value.toUpperCase() === input.dataset.answer;
+                input.classList.remove('correct', 'incorrect');
+                input.classList.add(isCorrect ? 'correct' : 'incorrect');
+                if (!isCorrect) allCorrect = false;
+            });
+            
+            if (allCorrect) {
+                setTimeout(() => {
+                    document.getElementById('decode-section').style.display = 'none';
+                    document.getElementById('reveal-section').style.display = 'block';
+                }, 500);
+            }
+        }
+        
+        init();
+    </script>
+</body>
+</html>
