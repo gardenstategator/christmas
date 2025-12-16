@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -569,36 +570,36 @@
             'CIRCLEJERKS': ['F', '★']
         };
         
-        // Grid with all words horizontal at staggered positions
+        // Grid with mixed horizontal, vertical orientations - More challenging!
         const gridData = [
-            ['X','Q','W','M','E','T','A','L','L','I','C','A','R','T','Y'],
-            ['T','K','P','V','N','B','M','Z','X','C','V','B','N','M','Q'],
-            ['H','Q','Z','Y','I','R','O','N','M','A','I','D','E','N','J'],
-            ['E','R','T','Y','U','I','O','P','A','S','D','F','G','H','Z'],
-            ['M','W','J','U','D','A','S','P','R','I','E','S','T','X','C'],
-            ['E','X','Q','W','E','R','T','Y','U','I','O','P','A','S','V'],
-            ['L','B','L','A','C','K','S','A','B','B','A','T','H','J','B'],
-            ['V','Y','Z','X','C','V','B','N','M','Q','W','E','R','T','N'],
-            ['I','U','P','O','I','B','L','A','C','K','F','L','A','G','M'],
-            ['N','O','P','O','I','U','Y','T','R','E','W','Q','A','S','Q'],
-            ['S','A','D','E','A','D','K','E','N','N','E','D','Y','S','W'],
-            ['Z','F','X','C','V','B','N','M','Q','W','E','R','T','Y','E'],
-            ['W','K','V','B','T','H','E','M','E','L','V','I','N','S','T'],
-            ['A','C','D','C','L','E','D','Z','E','P','P','E','L','I','N'],
-            ['P','O','C','I','R','C','L','E','J','E','R','K','S','G','H']
+            ['M','E','T','A','L','L','I','C','A','Y','E','N','C','Y','B'],
+            ['J','E','J','W','R','M','Z','E','I','E','P','I','C','T','L'],
+            ['Y','T','I','R','O','N','M','A','I','D','E','N','Y','H','A'],
+            ['F','C','B','Z','K','M','F','K','X','M','Q','Q','Y','E','C'],
+            ['D','J','U','D','A','S','P','R','I','E','S','T','Q','M','K'],
+            ['Y','B','H','R','D','K','V','W','G','C','K','Q','W','E','S'],
+            ['D','E','A','D','K','E','N','N','E','D','Y','S','Y','L','A'],
+            ['J','U','O','L','T','E','O','B','V','P','R','K','L','V','B'],
+            ['R','L','B','B','L','A','C','K','F','L','A','G','P','I','B'],
+            ['Q','Z','G','Z','F','Q','I','T','O','E','C','L','E','N','A'],
+            ['M','L','E','D','Z','E','P','P','E','L','I','N','M','S','T'],
+            ['E','M','S','D','Z','S','P','N','M','H','W','M','Y','S','H'],
+            ['K','U','C','I','R','C','L','E','J','E','R','K','S','Y','K'],
+            ['L','S','I','X','U','Q','L','F','Z','O','F','Q','B','O','H'],
+            ['A','C','D','C','G','G','G','H','F','T','E','B','E','S','V']
         ];
         
         const wordPositions = {
-            'METALLICA': [0, 3, 'H'],
-            'IRONMAIDEN': [2, 4, 'H'],
-            'JUDASPRIEST': [4, 2, 'H'],
-            'BLACKSABBATH': [6, 1, 'H'],
-            'BLACKFLAG': [8, 5, 'H'],
-            'DEADKENNEDYS': [10, 2, 'H'],
-            'THEMELVINS': [12, 4, 'H'],
-            'ACDC': [13, 0, 'H'],
-            'LEDZEPPELIN': [13, 4, 'H'],
-            'CIRCLEJERKS': [14, 2, 'H']
+            'METALLICA': [0, 0, 'H'],       // Horizontal
+            'IRONMAIDEN': [2, 2, 'H'],      // Horizontal
+            'JUDASPRIEST': [4, 1, 'H'],     // Horizontal
+            'DEADKENNEDYS': [6, 0, 'H'],    // Horizontal
+            'BLACKFLAG': [8, 3, 'H'],       // Horizontal
+            'LEDZEPPELIN': [10, 1, 'H'],    // Horizontal
+            'CIRCLEJERKS': [12, 2, 'H'],    // Horizontal
+            'THEMELVINS': [1, 13, 'V'],     // Vertical
+            'BLACKSABBATH': [0, 14, 'V'],   // Vertical
+            'ACDC': [14, 0, 'H']            // Horizontal
         };
         
         let foundBands = new Set();
